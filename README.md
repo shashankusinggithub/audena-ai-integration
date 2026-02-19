@@ -12,6 +12,12 @@ It supports multiple STT and LLM providers, structured outputs, retry logic, and
 
 ## How to Run
 
+0. Pre-requisites
+
+* Python 3.11+
+* `ffmpeg` installed and available in PATH
+* Refer to [Whisper installation guide](https://github.com/openai/whisper) for installation instructions.
+
 1. Install dependencies. Its recommended to use a virtual environment.
 
 ```
