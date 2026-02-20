@@ -9,12 +9,11 @@ from core.exceptions import (
     SemanticValidationError,
 )
 from core.models import (
-    ClarificationResponse,
     IntentLiterals,
     PipelineIntentResponse,
     ProviderIntentResponse,
 )
-from core.prompts import build_clarification_prompt, build_intent_prompt
+from core.prompts import build_intent_prompt
 from utils.logging import get_logger
 from providers.llm.base import LLMProvider
 
@@ -70,41 +69,20 @@ class LLMRouter:
                 fallback_triggered=intent_outcome.fallback_triggered,
             )
 
-        self.logger.info(
-            {
-                "message": "Low confidence detected, generating clarification question",
-                "provider": intent_outcome.provider_name,
-                "confidence": intent_outcome.payload.confidence,
-                "threshold": self.confidence_threshold,
-                "intent": intent_outcome.payload.intent,
-            }
+        clarification_question = (
+            intent_outcome.payload.clarification_question
+            or DEFAULT_CLARIFICATION_QUESTION
         )
 
-        overall_fallback = intent_outcome.fallback_triggered
-        clarification_question = DEFAULT_CLARIFICATION_QUESTION
-        clarification_provider = "fallback"
-
-        try:
-            clarification_prompt = build_clarification_prompt(transcript)
-            clarification_outcome = self._run_with_failover(
-                prompt=clarification_prompt,
-                response_model=ClarificationResponse,
-                preferred_provider_index=intent_outcome.provider_index,
-                step_label="clarification",
-            )
-            clarification_question = clarification_outcome.payload.clarification_question
-            clarification_provider = clarification_outcome.provider_name
-            overall_fallback = overall_fallback or clarification_outcome.fallback_triggered
-        except AllProvidersFailedError:
-            overall_fallback = True
-
         self.logger.info(
             {
-                "message": "LLM clarification generated",
+                "message": "Low confidence detected in one-step classification",
                 "provider": intent_outcome.provider_name,
-                "clarification_provider": clarification_provider,
-                "fallback_triggered": overall_fallback,
+                "intent": intent_outcome.payload.intent,
+                "confidence": intent_outcome.payload.confidence,
+                "threshold": self.confidence_threshold,
                 "clarification_question": clarification_question,
+                "fallback_triggered": intent_outcome.fallback_triggered,
             }
         )
 
@@ -113,7 +91,7 @@ class LLMRouter:
             confidence=intent_outcome.payload.confidence,
             notes=intent_outcome.payload.notes,
             provider_used=intent_outcome.provider_name,
-            fallback_triggered=overall_fallback,
+            fallback_triggered=intent_outcome.fallback_triggered,
             clarification_question=clarification_question,
         )
 

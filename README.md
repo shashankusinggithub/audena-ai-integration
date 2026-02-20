@@ -63,9 +63,23 @@ The output is a structured JSON object containing intent, confidence, and metada
 * **Single composite resilience decorator**
   Retry + timeout + circuit breaker are handled in one place to keep provider code clean.
 
-* **Clarification loop**
+* **One-step intent + clarification output**
 
-  If LLM output is uncertain, a clarification question is asked. User response is passed back to LLM.
+  LLM returns intent, confidence, notes, and (when uncertain) a clarification question in one structured response.
+  Reason:
+  * Single round-trip to LLM for intent + clarification.
+  * Reduces latency and provider load.
+  * Improves user experience by eliminating multiple back-and-forths.
+
+  Tradeoff:
+  * 2-step process should be considered when LLM output intent is uncertain very rarely.
+  * 2-step process is more robust against LLM errors or unexpected outputs.
+  * 2-step process can be used when for more complex or domain-specific tasks where a single response is not sufficient.
+  * Increased latency for clarification loop.
+  * Potential for infinite loops if LLM keeps returning uncertain responses.
+  * Requires careful handling of user interruptions.
+
+
 
 * **Separation of concerns**
 
