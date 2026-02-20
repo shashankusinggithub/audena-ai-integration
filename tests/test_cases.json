@@ -1,0 +1,22 @@
+[
+  {
+    "transcript": "I need help resetting my password",
+    "expected_intent": "account_support"
+  },
+  {
+    "transcript": "Why was I charged twice this month?",
+    "expected_intent": "billing_issue"
+  },
+  {
+    "transcript": "The app keeps crashing when I open it",
+    "expected_intent": "technical_support"
+  },
+  {
+    "transcript": "Can you explain your pricing plans?",
+    "expected_intent": "general_query"
+  },
+  {
+    "transcript": "Uh… I’m not sure what happened but something’s wrong",
+    "expected_intent": "uncertain"
+  }
+]

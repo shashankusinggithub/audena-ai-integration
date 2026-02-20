@@ -6,7 +6,7 @@ INTENT_ALLOWED_INTENTS: tuple[str, ...] = (
     "billing_issue",
     "technical_support",
     "general_query",
-    "unclear_request",
+    "uncertain",
 )
 
 

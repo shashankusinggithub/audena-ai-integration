@@ -13,7 +13,7 @@ class IntentResponse(BaseModel):
         "billing_issue",
         "technical_support",
         "general_query",
-        "unclear_request"
+        "uncertainty"
     ]
     confidence: float = Field(ge=0.0, le=1.0)
     notes: str

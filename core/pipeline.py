@@ -87,7 +87,7 @@ class VoicePipeline:
             )
 
         return {
-            "intent": "unclear_request",
+            "intent": "uncertain",
             "confidence": 0.0,
             "notes": reason,
             "provider_used": None,

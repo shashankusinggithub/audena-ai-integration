@@ -22,7 +22,7 @@ Return JSON with the following structure:
 
 Rules:
 - If the request is unclear, ambiguous, or incomplete,
-  return intent="unclear_request" and confidence=0.0.
+  return intent="uncertain" and confidence=0.0.
 - Confidence must always be between 0 and 1.
 
 User transcript:
