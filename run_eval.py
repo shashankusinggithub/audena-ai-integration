@@ -2,7 +2,6 @@ import json
 import time
 
 from config import Settings
-from core.stt_router import STTRouter
 from core.llm_router import LLMRouter
 
 from providers.llm.gemini import GeminiLLMProvider

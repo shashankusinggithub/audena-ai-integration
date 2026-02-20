@@ -1,5 +1,4 @@
 import time
-import logging
 from functools import wraps
 from typing import Tuple, Type
 
