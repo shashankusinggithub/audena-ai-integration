@@ -19,11 +19,8 @@ class ProviderIntentResponse(BaseModel):
     intent: IntentLiterals  
     confidence: float = Field(ge=0.0, le=1.0)
     notes: str
-
-class ClarificationResponse(BaseModel):
-    clarification_question: str
+    clarification_question: str | None = None
 
 class PipelineIntentResponse(ProviderIntentResponse):
     provider_used: str | None = None
     fallback_triggered: bool = False
-    clarification_question: str | None = None
