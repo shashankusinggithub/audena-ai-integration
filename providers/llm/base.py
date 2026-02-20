@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from core.models import IntentResponse
+from core.models import ProviderIntentResponse
 
 
 class LLMProvider(ABC):
 
     @abstractmethod
-    def classify(self, transcript: str) -> IntentResponse:
+    def classify(self, transcript: str) -> ProviderIntentResponse:
         pass
 
     @property

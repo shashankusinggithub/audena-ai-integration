@@ -1,5 +1,5 @@
 from google import genai
-from core.models import IntentResponse
+from core.models import ProviderIntentResponse
 from core.exceptions import SemanticValidationError
 from core.prompts import build_intent_prompt
 from providers.llm.base import LLMProvider
@@ -19,7 +19,7 @@ class GeminiLLMProvider(LLMProvider):
     def name(self) -> str:
         return "gemini"
 
-    def classify(self, transcript: str) -> IntentResponse:
+    def classify(self, transcript: str) -> ProviderIntentResponse:
 
         @resilient(
             retry_attempts=self.settings.LLM_RETRY,
@@ -38,19 +38,11 @@ class GeminiLLMProvider(LLMProvider):
                 contents=prompt,
                 config={
                     "response_mime_type": "application/json",
-                    "response_schema": IntentResponse.model_json_schema(),
+                    "response_schema": ProviderIntentResponse.model_json_schema(),
                 },
             )
 
-            raw_text = response.text
 
-            try:
-                parsed = IntentResponse.model_validate_json(raw_text)
-            except Exception as e:
-                raise SemanticValidationError(
-                    f"Invalid structured output from Gemini: {e}"
-                )
-
-            return parsed
+            return response.text
 
         return execute()

@@ -7,7 +7,7 @@ class STTResult(BaseModel):
     language: str | None = None
 
 
-class IntentResponse(BaseModel):
+class ProviderIntentResponse(BaseModel):
     intent: Literal[
         "account_support",
         "billing_issue",
@@ -17,5 +17,7 @@ class IntentResponse(BaseModel):
     ]
     confidence: float = Field(ge=0.0, le=1.0)
     notes: str
+
+class PipelineIntentResponse(ProviderIntentResponse):
     provider_used: str | None = None
     fallback_triggered: bool = False

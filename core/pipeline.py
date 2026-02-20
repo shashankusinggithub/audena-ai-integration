@@ -1,5 +1,5 @@
 from core import tts_router
-from core.models import IntentResponse
+from core.models import PipelineIntentResponse
 from core.exceptions import AllProvidersFailedError
 from utils.logging import get_logger
 
@@ -29,7 +29,7 @@ class VoicePipeline:
                 return self._fallback("Empty transcript")
 
             # Step 2: LLM reasoning
-            intent_result: IntentResponse = self.llm_router.classify(transcript)
+            intent_result: PipelineIntentResponse = self.llm_router.classify(transcript)
 
             response = intent_result.model_dump()
             audio_stub = self.tts_router.synthesize(response["intent"])

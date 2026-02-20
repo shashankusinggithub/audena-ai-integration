@@ -3,14 +3,14 @@ from core.exceptions import (
     AllProvidersFailedError,
     LowConfidenceError,
 )
-from core.models import IntentResponse
+from core.models import PipelineIntentResponse
 from utils.logging import get_logger
-
+from providers.llm.base import LLMProvider
 class LLMRouter:
 
     def __init__(
         self,
-        providers: List,
+        providers: List[LLMProvider],
         confidence_threshold: float = 0.4,
         logger=None,
     ):
@@ -18,34 +18,37 @@ class LLMRouter:
         self.confidence_threshold = confidence_threshold
         self.logger = logger or get_logger()
 
-    def classify(self, transcript: str) -> IntentResponse:
+    def classify(self, transcript: str) -> PipelineIntentResponse:
         last_error = None
         fallback_triggered = False
 
 
-        for idx, provider in enumerate(self.providers):
+        for idx, provider in enumerate[LLMProvider](self.providers):
             try:
-                result: IntentResponse = provider.classify(transcript)
+                result = provider.classify(transcript)
+                
+                parsed_result = PipelineIntentResponse.model_validate_json(result)
+                parsed_result.provider_used = provider.name
+                parsed_result.fallback_triggered = fallback_triggered
 
-                if result.confidence < self.confidence_threshold:
+                if parsed_result.confidence < self.confidence_threshold:
                     raise LowConfidenceError(
-                        f"Low confidence: {result.confidence}"
+                        f"Low confidence: {parsed_result.confidence} for provider {provider.name}"   
                     )
 
-                result.provider_used = provider.name
-                result.fallback_triggered = fallback_triggered
 
                 self.logger.info(
                     {
                         "message": "LLM step completed",
+                        "Note": parsed_result.notes,
                         "provider": provider.name,
-                        "intent": result.intent,
-                        "confidence": result.confidence,
-                        "fallback_triggered": result.fallback_triggered,
+                        "intent": parsed_result.intent,
+                        "confidence": parsed_result.confidence,
+                        "fallback_triggered": parsed_result.fallback_triggered,
                     }
                 )
 
-                return result
+                return parsed_result
 
             except Exception as e:
                 last_error = e

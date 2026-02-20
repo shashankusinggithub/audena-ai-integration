@@ -1,5 +1,5 @@
 from openai import OpenAI
-from core.models import IntentResponse
+from core.models import ProviderIntentResponse
 from core.exceptions import SemanticValidationError
 from core.prompts import build_intent_prompt
 from providers.llm.base import LLMProvider
@@ -19,7 +19,7 @@ class OpenAILLMProvider(LLMProvider):
     def name(self) -> str:
         return "openai"
 
-    def classify(self, transcript: str) -> IntentResponse:
+    def classify(self, transcript: str) -> ProviderIntentResponse:
 
         @resilient(
             retry_attempts=self.settings.LLM_RETRY,
@@ -41,7 +41,7 @@ class OpenAILLMProvider(LLMProvider):
                         "content": prompt,
                     }
                 ],
-                response_format=IntentResponse,
+                response_format=ProviderIntentResponse,
             )
 
             message = completion.choices[0].message
