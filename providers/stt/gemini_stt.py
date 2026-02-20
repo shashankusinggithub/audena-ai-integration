@@ -4,13 +4,14 @@ from google.genai import types
 from core.models import STTResult
 from providers.stt.base import STTProvider
 from resilience.resilient import resilient
+from utils.logging import get_logger
 
 
 class GeminiSTTProvider(STTProvider):
 
     def __init__(self, settings, logger=None):
         self.settings = settings
-        self.logger = logger
+        self.logger = logger or get_logger()
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     @property

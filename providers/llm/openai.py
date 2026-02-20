@@ -4,13 +4,14 @@ from core.exceptions import SemanticValidationError
 from core.prompts import build_intent_prompt
 from providers.llm.base import LLMProvider
 from resilience.resilient import resilient
+from utils.logging import get_logger
 
 
 class OpenAILLMProvider(LLMProvider):
 
     def __init__(self, settings, logger=None):
         self.settings = settings
-        self.logger = logger
+        self.logger = logger or get_logger()
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.breaker = settings.LLM_BREAKER_OPENAI
 
@@ -31,7 +32,7 @@ class OpenAILLMProvider(LLMProvider):
         def execute():
 
             prompt = build_intent_prompt(transcript)
-
+            #https://developers.openai.com/cookbook/examples/structured_outputs_intro
             completion = self.client.beta.chat.completions.parse(
                 model=self.settings.OPENAI_LLM_MODEL,
                 messages=[

@@ -4,7 +4,7 @@ from core.exceptions import (
     LowConfidenceError,
 )
 from core.models import IntentResponse
-
+from utils.logging import get_logger
 
 class LLMRouter:
 
@@ -16,7 +16,7 @@ class LLMRouter:
     ):
         self.providers = providers
         self.confidence_threshold = confidence_threshold
-        self.logger = logger
+        self.logger = logger or get_logger()
 
     def classify(self, transcript: str) -> IntentResponse:
         last_error = None

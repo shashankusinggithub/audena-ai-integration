@@ -1,11 +1,12 @@
 from providers.tts.base import TTSProvider
 from resilience.resilient import resilient
+from utils.logging import get_logger
 
 
 class StubTTSProvider(TTSProvider):
     def __init__(self, settings, logger=None):
         self.settings = settings
-        self.logger = logger
+        self.logger = logger or get_logger()
 
 
     @property

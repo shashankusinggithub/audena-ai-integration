@@ -43,8 +43,8 @@ class JsonFormatter(logging.Formatter):
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
-            "function": record.funcName,
-            "line": record.lineno,
+            # "function": record.funcName,
+            # "line": record.lineno,
         }
 
         if isinstance(record.msg, dict):

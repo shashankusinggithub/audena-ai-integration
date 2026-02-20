@@ -1,6 +1,7 @@
 from core import tts_router
 from core.models import IntentResponse
 from core.exceptions import AllProvidersFailedError
+from utils.logging import get_logger
 
 
 class VoicePipeline:
@@ -9,7 +10,7 @@ class VoicePipeline:
         self.stt_router = stt_router
         self.llm_router = llm_router
         self.tts_router = tts_router
-        self.logger = logger
+        self.logger = logger or get_logger()
 
     def run(self, audio_path: str) -> dict:
 

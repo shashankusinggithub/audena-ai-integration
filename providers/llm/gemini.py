@@ -4,13 +4,14 @@ from core.exceptions import SemanticValidationError
 from core.prompts import build_intent_prompt
 from providers.llm.base import LLMProvider
 from resilience.resilient import resilient
+from utils.logging import get_logger
 
 
 class GeminiLLMProvider(LLMProvider):
 
     def __init__(self, settings, logger=None):
         self.settings = settings
-        self.logger = logger
+        self.logger = logger or get_logger()
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         self.breaker = settings.LLM_BREAKER
 

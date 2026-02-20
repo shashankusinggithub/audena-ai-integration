@@ -1,12 +1,13 @@
 from typing import List
 from core.exceptions import AllProvidersFailedError
+from utils.logging import get_logger
 
 
 class TTSRouter:
 
     def __init__(self, providers: List, logger=None):
         self.providers = providers
-        self.logger = logger
+        self.logger = logger or get_logger()
 
     def synthesize(self, text: str) -> str:
         last_error = None

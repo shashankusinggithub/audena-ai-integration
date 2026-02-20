@@ -1,13 +1,14 @@
 from typing import List
 from core.exceptions import AllProvidersFailedError
 from core.models import STTResult
+from utils.logging import get_logger
 
 
 class STTRouter:
 
     def __init__(self, providers: List, logger=None):
         self.providers = providers
-        self.logger = logger
+        self.logger = logger or get_logger()
 
     def transcribe(self, audio_path: str) -> STTResult:
         last_error = None

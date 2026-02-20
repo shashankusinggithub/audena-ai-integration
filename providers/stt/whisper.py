@@ -2,13 +2,14 @@ import whisper
 from core.models import STTResult
 from providers.stt.base import STTProvider
 from resilience.resilient import resilient
+from utils.logging import get_logger
 
 
 class WhisperSTTProvider(STTProvider):
 
     def __init__(self, settings, logger=None):
         self.settings = settings
-        self.logger = logger
+        self.logger = logger or get_logger()
         self.model = whisper.load_model(settings.WHISPER_MODEL)
 
     @property

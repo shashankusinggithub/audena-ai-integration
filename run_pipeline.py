@@ -1,6 +1,5 @@
 import sys
 from config import Settings
-from utils.logging import get_logger
 
 from core.pipeline import VoicePipeline
 from core.stt_router import STTRouter
@@ -32,55 +31,52 @@ TTS_MAP = {
 
 
 
-def build_stt_providers(settings, logger):
+def build_stt_providers(settings):
     providers = []
 
     for name in settings.STT_PROVIDER_ORDER:
         if name in STT_MAP:
-            providers.append(STT_MAP[name](settings, logger))
+            providers.append(STT_MAP[name](settings))
 
     return providers
 
 
-def build_llm_providers(settings, logger):
+def build_llm_providers(settings):
     providers = []
 
     for name in settings.LLM_PROVIDER_ORDER:
         if name in LLM_MAP:
-            providers.append(LLM_MAP[name](settings, logger))
+            providers.append(LLM_MAP[name](settings))
 
     return providers
 
-def build_tts_provider(settings, logger):
+def build_tts_provider(settings):
     providers = []
 
     for name in settings.TTS_PROVIDER_ORDER:
         if name in TTS_MAP:
-            providers.append(TTS_MAP[name](settings, logger))
+            providers.append(TTS_MAP[name](settings))
 
     return providers
 
 def main(audio_path: str):
     settings = Settings()
-    logger = get_logger()
+
+    stt_providers = build_stt_providers(settings)
+    tts_providers = build_tts_provider(settings)  
+    llm_providers = build_llm_providers(settings)
 
 
-    stt_providers = build_stt_providers(settings, logger)
-    tts_providers = build_tts_provider(settings, logger)  
-    llm_providers = build_llm_providers(settings, logger)
-
-
-    stt_router = STTRouter(stt_providers, logger=logger)
+    stt_router = STTRouter(stt_providers)
     llm_router = LLMRouter(
         llm_providers,
         confidence_threshold=settings.CONFIDENCE_THRESHOLD,
-        logger=logger,
     )
-    tts_router = TTSRouter(tts_providers, logger=logger)
+    tts_router = TTSRouter(tts_providers)
 
 
 
-    pipeline = VoicePipeline(stt_router, llm_router, tts_router, logger=logger)
+    pipeline = VoicePipeline(stt_router, llm_router, tts_router)
 
     result = pipeline.run(audio_path)
 
