@@ -34,6 +34,8 @@ OPENAI_API_KEY=...
 
 ```
 python run_pipeline.py <audio_file.wav>
+# Or to run evaluation script
+python run_eval.py
 ```
 
 Example:
