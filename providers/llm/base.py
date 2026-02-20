@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
-from core.models import ProviderIntentResponse
+from typing import Type, TypeVar
+from pydantic import BaseModel
 
+ModelT = TypeVar("ModelT", bound=BaseModel)
 
 class LLMProvider(ABC):
 
     @abstractmethod
-    def classify(self, transcript: str) -> ProviderIntentResponse:
+    def generate(self, prompt: str, response_model: Type[ModelT]) -> ModelT:
         pass
 
     @property

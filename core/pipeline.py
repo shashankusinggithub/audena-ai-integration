@@ -31,7 +31,7 @@ class VoicePipeline:
             # Step 2: LLM reasoning
             intent_result: PipelineIntentResponse = self.llm_router.classify(transcript)
 
-            response = intent_result.model_dump()
+            response = intent_result.model_dump(mode="json")
             audio_stub = self.tts_router.synthesize(response["intent"])
             response["audio_stub"] = audio_stub
 

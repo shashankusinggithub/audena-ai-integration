@@ -3,6 +3,11 @@ class SemanticValidationError(Exception):
     pass
 
 
+class ProviderExecutionError(Exception):
+    """Raised when a provider call fails due to runtime/provider issues."""
+    pass
+
+
 class LowConfidenceError(Exception):
     """Raised when LLM confidence is below acceptable threshold."""
     pass

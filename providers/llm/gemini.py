@@ -1,8 +1,9 @@
+from typing import Type
 from google import genai
-from core.models import ProviderIntentResponse
-from core.exceptions import SemanticValidationError
-from core.prompts import build_intent_prompt
-from providers.llm.base import LLMProvider
+from pydantic import ValidationError
+
+from core.exceptions import ProviderExecutionError, SemanticValidationError
+from providers.llm.base import LLMProvider, ModelT
 from resilience.resilient import resilient
 from utils.logging import get_logger
 
@@ -19,30 +20,35 @@ class GeminiLLMProvider(LLMProvider):
     def name(self) -> str:
         return "gemini"
 
-    def classify(self, transcript: str) -> ProviderIntentResponse:
+    def generate(self, prompt: str, response_model: Type[ModelT]) -> ModelT:
 
         @resilient(
             retry_attempts=self.settings.LLM_RETRY,
             timeout_seconds=self.settings.LLM_TIMEOUT,
             circuit_breaker=self.breaker,
-            retry_exceptions=(Exception, SemanticValidationError),
+            retry_exceptions=(ProviderExecutionError, SemanticValidationError),
             step_name="gemini_llm",
             logger=self.logger,
         )
         def execute():
 
-            prompt = build_intent_prompt(transcript)
+            try:
+                response = self.client.models.generate_content(
+                    model=self.settings.GEMINI_LLM_MODEL,
+                    contents=prompt,
+                    config={
+                        "response_mime_type": "application/json",
+                        "response_schema": response_model.model_json_schema(),
+                    },
+                )
+            except Exception as e:
+                raise ProviderExecutionError(f"Gemini request failed: {e}") from e
 
-            response = self.client.models.generate_content(
-                model=self.settings.GEMINI_LLM_MODEL,
-                contents=prompt,
-                config={
-                    "response_mime_type": "application/json",
-                    "response_schema": ProviderIntentResponse.model_json_schema(),
-                },
-            )
-
-
-            return response.text
+            try:
+                return response_model.model_validate_json(response.text)
+            except ValidationError as e:
+                raise SemanticValidationError(
+                    f"Gemini returned invalid structured output: {e}"
+                ) from e
 
         return execute()
