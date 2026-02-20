@@ -63,6 +63,10 @@ The output is a structured JSON object containing intent, confidence, and metada
 * **Single composite resilience decorator**
   Retry + timeout + circuit breaker are handled in one place to keep provider code clean.
 
+* **Clarification loop**
+
+  If LLM output is uncertain, a clarification question is asked. User response is passed back to LLM.
+
 * **Separation of concerns**
 
   * `core/` → orchestration & business logic
